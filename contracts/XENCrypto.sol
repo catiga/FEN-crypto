@@ -10,7 +10,7 @@ import "./interfaces/IRankedMintingToken.sol";
 import "./interfaces/IBurnableToken.sol";
 import "./interfaces/IBurnRedeemable.sol";
 
-contract XENCrypto is Context, IRankedMintingToken, IStakingToken, IBurnableToken, ERC20("XEN Crypto", "vvXEN") {
+contract XENCrypto is Context, IRankedMintingToken, IStakingToken, IBurnableToken, ERC20("FEN Crypto", "FEN") {
     using Math for uint256;
     using ABDKMath64x64 for int128;
     using ABDKMath64x64 for uint256;
@@ -61,7 +61,7 @@ contract XENCrypto is Context, IRankedMintingToken, IStakingToken, IBurnableToke
     uint256 public constant XEN_APY_DAYS_STEP = 90;
     uint256 public constant XEN_APY_END = 2;
 
-    string public constant AUTHORS = "@MrJackLevin @lbelyaev faircrypto.org";
+    string public constant AUTHORS = "respect pow from @MrJackLevin @lbelyaev faircrypto.org";
 
     // PUBLIC STATE, READABLE VIA NAMESAKE GETTERS
 
