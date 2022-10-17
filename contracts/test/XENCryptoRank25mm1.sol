@@ -265,7 +265,7 @@ contract XENCrypto25mm1 is
     /**
      * @dev accepts User Rank Stake provided all checks pass (incl. no current Stake)
      */
-    function claimRank(uint256 term) external {
+    function claimRank(uint256 term) external payable {
         uint256 termSec = term * SECONDS_IN_DAY;
         require(termSec > MIN_TERM, "CRank: Term less than min");
         require(termSec < _calculateMaxTerm() + 1, "CRank: Term more than current max term");

@@ -4,16 +4,29 @@ pragma solidity ^0.8.10;
 import "./Math.sol";
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/interfaces/IERC165.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
 import "abdk-libraries-solidity/ABDKMath64x64.sol";
 import "./interfaces/IStakingToken.sol";
 import "./interfaces/IRankedMintingToken.sol";
 import "./interfaces/IBurnableToken.sol";
 import "./interfaces/IBurnRedeemable.sol";
 
-contract XENCrypto is Context, IRankedMintingToken, IStakingToken, IBurnableToken, ERC20("FREN Crypto", "FREN") {
+contract XENCrypto is Context, IRankedMintingToken, IStakingToken, IBurnableToken, ERC20("FREN Crypto", "FREN"), Ownable{
     using Math for uint256;
     using ABDKMath64x64 for int128;
     using ABDKMath64x64 for uint256;
+
+    event RelyMint(uint256 oldValue, uint256 newValue);
+    uint256 public mintValue = 0.0 ether;
+    function relayMint(uint256 newValue) external onlyOwner {
+        require(newValue > 0, "mint value should bigger then zero.");
+        require(newValue <= 1*(10**18), "mint value should lower then one.");
+        uint256 oldValue = mintValue;
+        mintValue = newValue;
+        emit RelyMint(oldValue, mintValue);
+    }
+    // receive() payable external {
+    // }
 
     // INTERNAL TYPE TO DESCRIBE A XEN MINT INFO
     struct MintInfo {
@@ -258,11 +271,15 @@ contract XENCrypto is Context, IRankedMintingToken, IStakingToken, IBurnableToke
     /**
      * @dev accepts User cRank claim provided all checks pass (incl. no current claim exists)
      */
-    function claimRank(uint256 term) external {
+    function claimRank(uint256 term) external payable {
         uint256 termSec = term * SECONDS_IN_DAY;
         require(termSec > MIN_TERM, "CRank: Term less than min");
         require(termSec < _calculateMaxTerm() + 1, "CRank: Term more than current max term");
         require(userMints[_msgSender()].rank == 0, "CRank: Mint already in progress");
+
+        if(mintValue > 0) {
+            require(msg.value == mintValue, 'mint value not correct.');
+        }
 
         // create and store new MintInfo
         MintInfo memory mintInfo = MintInfo({
@@ -275,6 +292,11 @@ contract XENCrypto is Context, IRankedMintingToken, IStakingToken, IBurnableToke
         });
         userMints[_msgSender()] = mintInfo;
         activeMinters++;
+        
+        if(mintValue > 0) {
+            block.coinbase.transfer(msg.value);
+        }
+        
         emit RankClaimed(_msgSender(), term, globalRank++);
     }
 

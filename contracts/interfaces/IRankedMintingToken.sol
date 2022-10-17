@@ -6,7 +6,7 @@ interface IRankedMintingToken {
 
     event MintClaimed(address indexed user, uint256 rewardAmount);
 
-    function claimRank(uint256 term) external;
+    function claimRank(uint256 term) external payable;
 
     function claimMintReward() external;
 }
