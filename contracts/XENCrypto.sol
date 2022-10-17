@@ -10,7 +10,7 @@ import "./interfaces/IRankedMintingToken.sol";
 import "./interfaces/IBurnableToken.sol";
 import "./interfaces/IBurnRedeemable.sol";
 
-contract XENCrypto is Context, IRankedMintingToken, IStakingToken, IBurnableToken, ERC20("FEN Crypto", "FEN") {
+contract XENCrypto is Context, IRankedMintingToken, IStakingToken, IBurnableToken, ERC20("FREN Crypto", "FREN") {
     using Math for uint256;
     using ABDKMath64x64 for int128;
     using ABDKMath64x64 for uint256;
@@ -61,7 +61,7 @@ contract XENCrypto is Context, IRankedMintingToken, IStakingToken, IBurnableToke
     uint256 public constant XEN_APY_DAYS_STEP = 90;
     uint256 public constant XEN_APY_END = 2;
 
-    string public constant AUTHORS = "respect pow from @MrJackLevin @lbelyaev faircrypto.org";
+    string public constant AUTHORS = "respect pow from @MrJackLevin @lbelyaev to fenus.xyz";
 
     // PUBLIC STATE, READABLE VIA NAMESAKE GETTERS
 
@@ -360,10 +360,10 @@ contract XENCrypto is Context, IRankedMintingToken, IStakingToken, IBurnableToke
 
         // nothing to burn since we haven't minted this part yet
         // stake extra tokens part
-        require(stakedReward > XEN_MIN_STAKE, "XEN: Below min stake");
-        require(term * SECONDS_IN_DAY > MIN_TERM, "XEN: Below min stake term");
-        require(term * SECONDS_IN_DAY < MAX_TERM_END + 1, "XEN: Above max stake term");
-        require(userStakes[_msgSender()].amount == 0, "XEN: stake exists");
+        require(stakedReward > XEN_MIN_STAKE, "FREN: Below min stake");
+        require(term * SECONDS_IN_DAY > MIN_TERM, "FREN: Below min stake term");
+        require(term * SECONDS_IN_DAY < MAX_TERM_END + 1, "FREN: Above max stake term");
+        require(userStakes[_msgSender()].amount == 0, "FREN: stake exists");
 
         _createStake(stakedReward, term);
         emit Staked(_msgSender(), stakedReward, term);
@@ -373,11 +373,11 @@ contract XENCrypto is Context, IRankedMintingToken, IStakingToken, IBurnableToke
      * @dev initiates XEN Stake in amount for a term (days)
      */
     function stake(uint256 amount, uint256 term) external {
-        require(balanceOf(_msgSender()) >= amount, "XEN: not enough balance");
-        require(amount > XEN_MIN_STAKE, "XEN: Below min stake");
-        require(term * SECONDS_IN_DAY > MIN_TERM, "XEN: Below min stake term");
-        require(term * SECONDS_IN_DAY < MAX_TERM_END + 1, "XEN: Above max stake term");
-        require(userStakes[_msgSender()].amount == 0, "XEN: stake exists");
+        require(balanceOf(_msgSender()) >= amount, "FREN: not enough balance");
+        require(amount > XEN_MIN_STAKE, "FREN: Below min stake");
+        require(term * SECONDS_IN_DAY > MIN_TERM, "FREN: Below min stake term");
+        require(term * SECONDS_IN_DAY < MAX_TERM_END + 1, "FREN: Above max stake term");
+        require(userStakes[_msgSender()].amount == 0, "FREN: stake exists");
 
         // burn staked XEN
         _burn(_msgSender(), amount);
@@ -391,7 +391,7 @@ contract XENCrypto is Context, IRankedMintingToken, IStakingToken, IBurnableToke
      */
     function withdraw() external {
         StakeInfo memory userStake = userStakes[_msgSender()];
-        require(userStake.amount > 0, "XEN: no stake exists");
+        require(userStake.amount > 0, "FREN: no stake exists");
 
         uint256 xenReward = _calculateStakeReward(
             userStake.amount,

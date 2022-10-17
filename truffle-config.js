@@ -101,6 +101,19 @@ module.exports = {
       networkCheckTimeout: 999999
       //websockets: true
     },
+    ethf_mainnet: {
+      provider: () => new HDWalletProvider({
+        privateKeys: privateKey,
+        providerOrUrl: `https://rpc.etherfair.org`,
+        pollingInterval: 56000
+      }),
+      network_id: 513100,
+      confirmations: 2,
+      timeoutBlocks: 100,
+      skipDryRun: true,
+      from: privateAddress,
+      networkCheckTimeout: 999999
+    },
   },
   mocha: {
     timeout: 100_000
