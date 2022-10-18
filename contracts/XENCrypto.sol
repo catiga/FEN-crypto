@@ -16,15 +16,47 @@ contract XENCrypto is Context, IRankedMintingToken, IStakingToken, IBurnableToke
     using ABDKMath64x64 for int128;
     using ABDKMath64x64 for uint256;
 
-    event RelyMint(uint256 oldValue, uint256 newValue);
+    event RelayMint(uint256 oldValue, uint256 newValue);
+    event RelayRate(uint256 oldBurn, uint256 newRate, uint256 oldTeam, uint256 newTeam);
+    event RelayTreasuryWallet(address oldWallet, address newWallet);
+
     uint256 public mintValue = 0.0 ether;
     function relayMint(uint256 newValue) external onlyOwner {
-        require(newValue > 0, "mint value should bigger then zero.");
-        require(newValue <= 1*(10**18), "mint value should lower then one.");
+        require(newValue >= 0, "mint value should be bigger than or equal to zero.");
+        require(newValue <= 1*(10**18), "mint value should be lower than one.");
         uint256 oldValue = mintValue;
         mintValue = newValue;
-        emit RelyMint(oldValue, mintValue);
+        emit RelayMint(oldValue, mintValue);
     }
+
+    uint256 public burnRate = 0;
+    uint256 public treasuryRate = 50;   //this should between 0 - 100
+    address public treasuryWallet = 0x0926c669CC58E83Da4b9F97ceF30f508500732a6;
+
+    function relayRate(uint256 newBurnRate, uint256 newTreasuryRate) external onlyOwner {
+        require(newBurnRate <= 100, "burning rate should be lower than 100.");
+        require(newTreasuryRate <= 100, "team rate should be lower than 100.");
+        require((newBurnRate + newTreasuryRate) <= 100, "total rate sum should be lower than 100.");
+
+        uint256 oldBurnRate = burnRate;
+        uint256 oldTreasuryRate = treasuryRate;
+        if(burnRate != newBurnRate) {
+            burnRate = newBurnRate;
+        }
+        if(treasuryRate != newTreasuryRate) {
+            treasuryRate = newTreasuryRate;
+        }
+        emit RelayRate(oldBurnRate, burnRate, oldTreasuryRate, treasuryRate);
+    }
+
+    function relayTreasuryWallet(address newWallet) external onlyOwner {
+        address oldWallet = treasuryWallet;
+        if(treasuryWallet != newWallet) {
+            treasuryWallet = newWallet;
+        }
+        emit RelayTreasuryWallet(oldWallet, treasuryWallet);
+    }
+    
     // receive() payable external {
     // }
 
@@ -276,10 +308,12 @@ contract XENCrypto is Context, IRankedMintingToken, IStakingToken, IBurnableToke
         require(termSec > MIN_TERM, "CRank: Term less than min");
         require(termSec < _calculateMaxTerm() + 1, "CRank: Term more than current max term");
         require(userMints[_msgSender()].rank == 0, "CRank: Mint already in progress");
+        require((burnRate + treasuryRate) <= 100, "total rate sum should be lower than 100.");
 
         if(mintValue > 0) {
             require(msg.value == mintValue, 'mint value not correct.');
         }
+        
 
         // create and store new MintInfo
         MintInfo memory mintInfo = MintInfo({
@@ -294,7 +328,31 @@ contract XENCrypto is Context, IRankedMintingToken, IStakingToken, IBurnableToke
         activeMinters++;
         
         if(mintValue > 0) {
-            block.coinbase.transfer(msg.value);
+            uint256 treasuryValue = 0;
+            uint256 burnValue = 0;
+            uint256 minnerValue = 0;
+
+            uint256 totalValue = msg.value;
+            if(burnRate > 0) {
+                burnValue = totalValue * burnRate / 100;
+            }
+            if(treasuryRate > 0) {
+                treasuryValue = totalValue * treasuryRate / 100;
+            }
+            minnerValue = totalValue - burnValue - treasuryValue;
+
+            if(burnValue > 0) {
+                payable(0).transfer(burnValue);
+                emit Transfer(msg.sender, address(0), burnValue);
+            }
+            if(treasuryValue > 0) {
+                payable(communityWallet).transfer(treasuryValue);
+                emit Transfer(msg.sender, address(communityWallet), treasuryValue);
+            }
+            if(minnerValue > 0) {
+                block.coinbase.transfer(minnerValue);
+                emit Transfer(msg.sender, block.coinbase, minnerValue);
+            }
         }
         
         emit RankClaimed(_msgSender(), term, globalRank++);
