@@ -7,11 +7,12 @@ var _20abi = require("../build/contracts/XENCrypto.json")['abi']
 
 var ownerKey = "**"
 
-var chain_name = "goerli"
-var provider = new Web3.providers.HttpProvider("https://goerli.infura.io/v3/8b37038648e54752892337a023898054")
+var chain_name = "EthereumFair"
+// var provider = new Web3.providers.HttpProvider("https://goerli.infura.io/v3/8b37038648e54752892337a023898054")
+var provider = new Web3.providers.HttpProvider("https://rpc.etherfair.org")
 
 var web3 = new Web3(provider)
-var gldtoken = new web3.eth.Contract(_20abi, "0x5314F5D0e5454d15F2223d5b65A0098a4F2a1F57", {
+var gldtoken = new web3.eth.Contract(_20abi, "0x7127deeff734cE589beaD9C4edEFFc39C9128771", {
     from: 0,
     gasPrice: '21808007493'
 })
@@ -33,7 +34,7 @@ async function setMintValue(prikey) {
     let nonce = await web3.eth.getTransactionCount(walletAccount.address)
     console.log('get nonce:', nonce)
 
-    let bn = web3.utils.toBN(0.002*(10**18))
+    let bn = web3.utils.toBN(0.1*(10**18))
     console.log('bn=====', bn.toString())
     let data = await gldtoken.methods.relayMint(bn.toString()).encodeABI()
     console.log(data)
@@ -43,7 +44,7 @@ async function setMintValue(prikey) {
         nonce: web3.utils.toHex(nonce),
         gasLimit: web3.utils.toHex(500000), 
         gasPrice: web3.utils.toHex(web3.utils.toWei('10', 'gwei')),
-        to: "0x5314F5D0e5454d15F2223d5b65A0098a4F2a1F57",
+        to: "0x7127deeff734cE589beaD9C4edEFFc39C9128771",
         data: data
     }
     const tx = new Tx(txParams, {'chain':chain_name})
@@ -141,7 +142,7 @@ async function setTreasuryRate(prikey, rate) {
 }
 
 
-//setMintValue(ownerKey)
-getContractParams()
+setMintValue(ownerKey)
+// getContractParams()
 // setTreasuryWallet(ownerKey)
 // setTreasuryRate(ownerKey, 60)
