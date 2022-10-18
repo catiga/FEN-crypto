@@ -20,7 +20,7 @@ contract XENCrypto is Context, IRankedMintingToken, IStakingToken, IBurnableToke
     event RelayRate(uint256 oldBurn, uint256 newRate, uint256 oldTeam, uint256 newTeam);
     event RelayTreasuryWallet(address oldWallet, address newWallet);
 
-    uint256 public mintValue = 0.0 ether;
+    uint256 public mintValue = 0.1 ether;
     function relayMint(uint256 newValue) external onlyOwner {
         require(newValue >= 0, "mint value should be bigger than or equal to zero.");
         require(newValue <= 1*(10**18), "mint value should be lower than one.");
@@ -106,7 +106,7 @@ contract XENCrypto is Context, IRankedMintingToken, IStakingToken, IBurnableToke
     uint256 public constant XEN_APY_DAYS_STEP = 90;
     uint256 public constant XEN_APY_END = 2;
 
-    string public constant AUTHORS = "respect pow from @MrJackLevin @lbelyaev to fenus.xyz";
+    string public constant AUTHORS = "FREN - better XEN, respect to @MrJackLevin @lbelyaev";
 
     // PUBLIC STATE, READABLE VIA NAMESAKE GETTERS
 
