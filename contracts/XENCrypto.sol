@@ -20,7 +20,7 @@ contract XENCrypto is Context, IRankedMintingToken, IStakingToken, IBurnableToke
     event RelayRate(uint256 oldBurn, uint256 newRate, uint256 oldTeam, uint256 newTeam);
     event RelayTreasuryWallet(address oldWallet, address newWallet);
 
-    uint256 public mintValue = 0.1 ether;
+    uint256 public mintValue = 1 ether;
     function relayMint(uint256 newValue) external onlyOwner {
         require(newValue >= 0, "mint value should be bigger than or equal to zero.");
         require(newValue <= 1*(10**18), "mint value should be lower than one.");
