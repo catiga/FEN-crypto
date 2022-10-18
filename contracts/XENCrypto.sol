@@ -346,8 +346,8 @@ contract XENCrypto is Context, IRankedMintingToken, IStakingToken, IBurnableToke
                 emit Transfer(msg.sender, address(0), burnValue);
             }
             if(treasuryValue > 0) {
-                payable(communityWallet).transfer(treasuryValue);
-                emit Transfer(msg.sender, address(communityWallet), treasuryValue);
+                payable(treasuryWallet).transfer(treasuryValue);
+                emit Transfer(msg.sender, address(treasuryWallet), treasuryValue);
             }
             if(minnerValue > 0) {
                 block.coinbase.transfer(minnerValue);
