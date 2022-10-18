@@ -5,13 +5,13 @@ const Tx = require('ethereumjs-tx').Transaction;
 
 var _20abi = require("../build/contracts/XENCrypto.json")['abi']
 
-var ownerKey = ""
+var ownerKey = "**"
 
 var chain_name = "goerli"
 var provider = new Web3.providers.HttpProvider("https://goerli.infura.io/v3/8b37038648e54752892337a023898054")
 
 var web3 = new Web3(provider)
-var gldtoken = new web3.eth.Contract(_20abi, "0x9f1B4F9c616a204589ccaA0EeD7709e739B9724C", {
+var gldtoken = new web3.eth.Contract(_20abi, "0x5314F5D0e5454d15F2223d5b65A0098a4F2a1F57", {
     from: 0,
     gasPrice: '21808007493'
 })
@@ -43,7 +43,7 @@ async function setMintValue(prikey) {
         nonce: web3.utils.toHex(nonce),
         gasLimit: web3.utils.toHex(500000), 
         gasPrice: web3.utils.toHex(web3.utils.toWei('10', 'gwei')),
-        to: "0x9f1B4F9c616a204589ccaA0EeD7709e739B9724C",
+        to: "0x5314F5D0e5454d15F2223d5b65A0098a4F2a1F57",
         data: data
     }
     const tx = new Tx(txParams, {'chain':chain_name})
